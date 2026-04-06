@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Practice - 50 Questions</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#d1d5db;
+      --accent:#2563eb;
+      --good:#15803d;
+      --bad:#b91c1c;
+      --soft:#eef4ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero, .section, .footer-box{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+      margin-bottom:18px;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size: 2rem;
+    }
+    h2{
+      margin:0 0 10px;
+      font-size:1.3rem;
+    }
+    p, li{font-size:1rem}
+    .muted{color:var(--muted)}
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    button{
+      border:none;
+      background:var(--accent);
+      color:white;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:0.95rem;
+    }
+    button.secondary{
+      background:#475569;
+    }
+    button.ghost{
+      background:#e5eefc;
+      color:#1e40af;
+    }
+    button:hover{opacity:0.95}
+    .question{
+      border-top:1px solid #e5e7eb;
+      padding:14px 0;
+    }
+    .question:first-of-type{
+      border-top:none;
+      padding-top:4px;
+    }
+    .qtext{
+      font-weight:600;
+      margin-bottom:8px;
+    }
+    input[type="text"]{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      font-size:1rem;
+      background:#fff;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+    .feedback{
+      margin-top:8px;
+      font-weight:600;
+      min-height: 1.4em;
+    }
+    .correct{color:var(--good)}
+    .incorrect{color:var(--bad)}
+    .answer{
+      margin-top:6px;
+      padding:8px 10px;
+      border-radius:10px;
+      background:var(--soft);
+      display:none;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+      gap:12px;
+    }
+    .score{
+      font-size:1.05rem;
+      font-weight:700;
+      margin-top:10px;
+    }
+    .small{
+      font-size:0.92rem;
+      color:var(--muted);
+    }
+    code{
+      background:#f3f4f6;
+      padding:2px 6px;
+      border-radius:6px;
+    }
+    @media (max-width:640px){
+      .wrap{padding:14px}
+      h1{font-size:1.6rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Math Practice: 50 Questions</h1>
+      <p>This practice page is based on the uploaded lesson content about variables, constants, operations, inequalities, grouping symbols, expressions, equations, and exponential notation.</p>
+      <p class="muted">How to use this page: type an answer, then click <strong>Check</strong>. You can also reveal the answer for each question, or use the buttons below to check or show everything.</p>
+      <div class="toolbar">
+        <button onclick="checkAll()">Check All</button>
+        <button class="secondary" onclick="showAllAnswers()">Show All Answers</button>
+        <button class="ghost" onclick="hideAllAnswers()">Hide All Answers</button>
+        <button class="ghost" onclick="clearAllAnswers()">Clear All</button>
+      </div>
+      <div class="score" id="scoreBox">Score: 0 / 50 checked correct</div>
+    </div>
+
+    <div class="section">
+      <h2>A. Variables and Constants</h2>
+      <div id="section-a"></div>
+    </div>
+
+    <div class="section">
+      <h2>B. Operations of Variables</h2>
+      <div id="section-b"></div>
+    </div>
+
+    <div class="section">
+      <h2>C. Inequalities</h2>
+      <div id="section-c"></div>
+    </div>
+
+    <div class="section">
+      <h2>D. Brackets / Grouping Symbols</h2>
+      <div id="section-d"></div>
+    </div>
+
+    <div class="section">
+      <h2>E. Expressions</h2>
+      <div id="section-e"></div>
+    </div>
+
+    <div class="section">
+      <h2>F. Equations</h2>
+      <div id="section-f"></div>
+    </div>
+
+    <div class="section">
+      <h2>G. Exponential Notation</h2>
+      <div id="section-g"></div>
+    </div>
+
+    <div class="footer-box">
+      <h2>Optional Challenge</h2>
+      <div class="grid">
+        <div><label>a variable</label><input type="text" placeholder="Write your own example"></div>
+        <div><label>a constant</label><input type="text" placeholder="Write your own example"></div>
+        <div><label>an inequality</label><input type="text" placeholder="Write your own example"></div>
+        <div><label>an expression</label><input type="text" placeholder="Write your own example"></div>
+        <div><label>an equation</label><input type="text" placeholder="Write your own example"></div>
+        <div><label>an exponential expression</label><input type="text" placeholder="Write your own example"></div>
+      </div>
+      <p class="small" style="margin-top:12px;">Tip: for open-ended questions, there may be more than one acceptable answer. The built-in checker accepts common answers, but a teacher may accept other correct responses too.</p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {n:1,s:"a",q:"What is a variable in math?", a:"A variable is a symbol, usually a letter, that can represent different values."},
+      {n:2,s:"a",q:"What is a constant in math?", a:"A constant is a fixed value that does not change."},
+      {n:3,s:"a",q:"In the statement “Greg’s age is a variable,” why is Greg’s age called a variable?", a:"Because Greg’s age changes over time."},
+      {n:4,s:"a",q:"In the statement “Greg and Alex’s age gap is a constant,” why is the age gap called a constant?", a:"Because the age difference stays the same."},
+      {n:5,s:"a",q:"Give one real-life example of a variable.", a:"Example: a person’s age, the temperature, or the number of students in a class."},
+      {n:6,s:"a",q:"Give one real-life example of a constant.", a:"Example: the number of days in a week or a fixed age difference between two people."},
+      {n:7,s:"a",q:"In the expression x + 7, which part is the variable?", a:"x"},
+      {n:8,s:"a",q:"In the expression x + 7, which part is the constant?", a:"7"},
+
+      {n:9,s:"b",q:"What operation does a + b represent?", a:"Addition"},
+      {n:10,s:"b",q:"How do you say a + b in words?", a:"a plus b"},
+      {n:11,s:"b",q:"What is the result of addition called?", a:"The sum"},
+      {n:12,s:"b",q:"What operation does a - b represent?", a:"Subtraction"},
+      {n:13,s:"b",q:"How do you say a - b in words?", a:"a minus b"},
+      {n:14,s:"b",q:"What is the result of subtraction called?", a:"The difference"},
+      {n:15,s:"b",q:"What operation does ab represent?", a:"Multiplication"},
+      {n:16,s:"b",q:"How do you say ab in words?", a:"a times b"},
+      {n:17,s:"b",q:"What is the result of multiplication called?", a:"The product"},
+      {n:18,s:"b",q:"What operation does a / b or a divided by b represent?", a:"Division"},
+      {n:19,s:"b",q:"How do you say a / b in words?", a:"a divided by b"},
+      {n:20,s:"b",q:"What is the result of division called?", a:"The quotient"},
+
+      {n:21,s:"c",q:"What does a = b mean?", a:"a is equal to b"},
+      {n:22,s:"c",q:"What does a ≠ b mean?", a:"a is not equal to b"},
+      {n:23,s:"c",q:"What does a < b mean?", a:"a is less than b"},
+      {n:24,s:"c",q:"What does a > b mean?", a:"a is greater than b"},
+      {n:25,s:"c",q:"What does a ≤ b mean?", a:"a is less than or equal to b"},
+      {n:26,s:"c",q:"What does a ≥ b mean?", a:"a is greater than or equal to b"},
+      {n:27,s:"c",q:"Write an inequality symbol that means “is less than.”", a:"<"},
+      {n:28,s:"c",q:"Write an inequality symbol that means “is greater than or equal to.”", a:"≥"},
+      {n:29,s:"c",q:"Write in words: x < 10.", a:"x is less than 10"},
+      {n:30,s:"c",q:"Write in words: y ≥ 4.", a:"y is greater than or equal to 4"},
+
+      {n:31,s:"d",q:"Name the three common grouping symbols.", a:"Parentheses, brackets, and braces"},
+      {n:32,s:"d",q:"Which grouping symbol looks like this: ( )?", a:"Parentheses"},
+      {n:33,s:"d",q:"Which grouping symbol looks like this: [ ]?", a:"Brackets"},
+      {n:34,s:"d",q:"Which grouping symbol looks like this: { }?", a:"Braces"},
+      {n:35,s:"d",q:"Why are grouping symbols used in math?", a:"They group parts of an expression and can change the order of operations."},
+
+      {n:36,s:"e",q:"What is an expression?", a:"An expression is a number, a variable, or a combination of numbers and variables and operation symbols."},
+      {n:37,s:"e",q:"Is a single number an expression?", a:"Yes"},
+      {n:38,s:"e",q:"Is a single variable an expression?", a:"Yes"},
+      {n:39,s:"e",q:"Is 3 + 5 an expression or an equation?", a:"An expression"},
+      {n:40,s:"e",q:"Write n - 1 as words.", a:"n minus one"},
+      {n:41,s:"e",q:"Write 6 × 7 as a phrase.", a:"The product of six and seven"},
+      {n:42,s:"e",q:"Write x / y as words.", a:"x divided by y"},
+
+      {n:43,s:"f",q:"What is an equation?", a:"An equation is made up of two expressions connected by an equal sign."},
+      {n:44,s:"f",q:"What is the main difference between an expression and an equation?", a:"An equation has an equal sign connecting two expressions; an expression does not."},
+      {n:45,s:"f",q:"Why is 3 + 5 = 8 an equation?", a:"Because it has two expressions connected by an equal sign."},
+      {n:46,s:"f",q:"Is x + 9 an expression or an equation?", a:"An expression"},
+      {n:47,s:"f",q:"Is y + 9 = 2y - 3 an expression or an equation?", a:"An equation"},
+      {n:48,s:"f",q:"Write the equation x = 53 as a sentence.", a:"x is equal to fifty-three"},
+
+      {n:49,s:"g",q:"What does aⁿ mean?", a:"It means a is multiplied by itself n times."},
+      {n:50,s:"g",q:"How do you read aⁿ aloud?", a:"a to the nth power"}
+    ];
+
+    function normalize(str){
+      return str
+        .toLowerCase()
+        .replace(/≤/g, "<=")
+        .replace(/≥/g, ">=")
+        .replace(/≠/g, "!=")
+        .replace(/[“”"'.?,!]/g, "")
+        .replace(/×/g, "x")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function acceptedAnswers(n){
+      const map = {
+        1:["a symbol that represents different values","a symbol usually a letter that can represent different values","a letter that can represent different values","something that can change"],
+        2:["a fixed value that does not change","a value that stays the same","a fixed value"],
+        3:["because gregs age changes over time","it changes over time","because his age changes"],
+        4:["because the age difference stays the same","because the gap stays the same","it does not change"],
+        5:["age","temperature","number of students","height of a growing plant"],
+        6:["days in a week","fixed age difference","12 months in a year","number of wheels on a bicycle"],
+        7:["x"],
+        8:["7"],
+        9:["addition"],
+        10:["a plus b"],
+        11:["sum","the sum"],
+        12:["subtraction"],
+        13:["a minus b"],
+        14:["difference","the difference"],
+        15:["multiplication"],
+        16:["a times b"],
+        17:["product","the product"],
+        18:["division"],
+        19:["a divided by b"],
+        20:["quotient","the quotient"],
+        21:["a is equal to b"],
+        22:["a is not equal to b"],
+        23:["a is less than b"],
+        24:["a is greater than b"],
+        25:["a is less than or equal to b","a is less than or equal b"],
+        26:["a is greater than or equal to b","a is greater than or equal b"],
+        27:["<"],
+        28:[">=","≥"],
+        29:["x is less than 10","x is less than ten"],
+        30:["y is greater than or equal to 4","y is greater than or equal to four"],
+        31:["parentheses brackets and braces","parentheses, brackets, and braces"],
+        32:["parentheses"],
+        33:["brackets"],
+        34:["braces"],
+        35:["to change the order of operations","they change the order of operations","to group parts of an expression and change the order of operations"],
+        36:["a number a variable or a combination of numbers and variables and operation symbols","a number a variable or a combination of numbers and variables with operation symbols","a math phrase without an equal sign"],
+        37:["yes"],
+        38:["yes"],
+        39:["expression","an expression"],
+        40:["n minus one"],
+        41:["the product of six and seven"],
+        42:["x divided by y"],
+        43:["an equation is made up of two expressions connected by an equal sign","two expressions connected by an equal sign"],
+        44:["an equation has an equal sign and an expression does not","an equation has an equal sign connecting two expressions"],
+        45:["because it has two expressions connected by an equal sign","because it has an equal sign"],
+        46:["expression","an expression"],
+        47:["equation","an equation"],
+        48:["x is equal to fifty-three","x is equal to 53"],
+        49:["a is multiplied by itself n times","multiply a by itself n times"],
+        50:["a to the nth power","a to the n-th power"]
+      };
+      return map[n].map(normalize);
+    }
+
+    function renderQuestions(){
+      questions.forEach(item => {
+        const host = document.getElementById(`section-${item.s}`);
+        const block = document.createElement('div');
+        block.className = 'question';
+        block.innerHTML = `
+          <div class="qtext">${item.n}. ${item.q}</div>
+          <input id="input-${item.n}" type="text" placeholder="Type your answer here">
+          <div class="actions">
+            <button onclick="checkOne(${item.n})">Check</button>
+            <button class="ghost" onclick="toggleAnswer(${item.n})">Show / Hide Answer</button>
+          </div>
+          <div class="feedback" id="feedback-${item.n}"></div>
+          <div class="answer" id="answer-${item.n}"><strong>Suggested answer:</strong> ${item.a}</div>
+        `;
+        host.appendChild(block);
+      });
+    }
+
+    function checkOne(n){
+      const userInput = normalize(document.getElementById(`input-${n}`).value);
+      const feedback = document.getElementById(`feedback-${n}`);
+      const goodAnswers = acceptedAnswers(n);
+      let ok = false;
+
+      if (userInput.length === 0){
+        feedback.className = "feedback incorrect";
+        feedback.textContent = "Please type an answer first.";
+        updateScore();
+        return;
+      }
+
+      if (goodAnswers.includes(userInput)) ok = true;
+
+      if (!ok){
+        if (n === 5 || n === 6){
+          ok = userInput.length >= 2;
+        }
+      }
+
+      feedback.className = ok ? "feedback correct" : "feedback incorrect";
+      feedback.textContent = ok ? "Correct or acceptable answer." : "Not matched by the checker yet. You can compare with the suggested answer.";
+      feedback.dataset.correct = ok ? "1" : "0";
+      updateScore();
+    }
+
+    function toggleAnswer(n){
+      const box = document.getElementById(`answer-${n}`);
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function showAllAnswers(){
+      questions.forEach(q => document.getElementById(`answer-${q.n}`).style.display = 'block');
+    }
+
+    function hideAllAnswers(){
+      questions.forEach(q => document.getElementById(`answer-${q.n}`).style.display = 'none');
+    }
+
+    function clearAllAnswers(){
+      questions.forEach(q => {
+        document.getElementById(`input-${q.n}`).value = '';
+        const f = document.getElementById(`feedback-${q.n}`);
+        f.textContent = '';
+        f.className = 'feedback';
+        f.dataset.correct = '0';
+      });
+      updateScore();
+    }
+
+    function checkAll(){
+      questions.forEach(q => checkOne(q.n));
+      updateScore();
+    }
+
+    function updateScore(){
+      let score = 0;
+      questions.forEach(q => {
+        const f = document.getElementById(`feedback-${q.n}`);
+        if (f.dataset.correct === "1") score++;
+      });
+      document.getElementById('scoreBox').textContent = `Score: ${score} / 50 checked correct`;
+    }
+
+    renderQuestions();
+    updateScore();
+  </script>
+</body>
+</html>
