@@ -685,8 +685,11 @@ function normalize(str) {
 function checkOne(n) {
   const input = document.getElementById(`input-${n}`);
   const feedback = document.getElementById(`feedback-${n}`);
+  const answer = document.getElementById(`answer-${n}`);
   const value = normalize(input.value);
   const answers = (accepted[n] || []).map(normalize);
+
+  answer.style.display = "block";
 
   if (!value) {
     feedback.className = "feedback incorrect";
