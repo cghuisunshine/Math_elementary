@@ -632,8 +632,43 @@
         </div>
   </div>
 
-<script src="./practice_math_50_questions_applied_math.js"></script>
 <script>
+function formatExponentHTML(html) {
+  return html.replace(
+    /(^|[^\w>])([A-Za-z0-9)]+)\^([A-Za-z0-9]+)/g,
+    function (_, prefix, base, exponent) {
+      return (
+        prefix +
+        '<span class="math-inline">' +
+        base +
+        '<sup class="math-exponent">' +
+        exponent +
+        "</sup></span>"
+      );
+    }
+  );
+}
+
+function formatDivisionHTML(html) {
+  const operand = '(?:<span class="math-inline">[^<]+<sup class="math-exponent">[^<]+<\\/sup><\\/span>|[A-Za-z0-9]+)';
+  const divisionPattern = new RegExp('(' + operand + ')\\s*\\/\\s*(' + operand + ')', "g");
+
+  return html.replace(divisionPattern, '$1 <span class="math-operator">÷</span> $2');
+}
+
+function formatMathHTML(html) {
+  return formatDivisionHTML(formatExponentHTML(html));
+}
+
+function applyMathFormatting(root) {
+  const scope = root || document;
+  const targets = scope.querySelectorAll(".qtext, .answer");
+
+  targets.forEach(function (element) {
+    element.innerHTML = formatMathHTML(element.innerHTML);
+  });
+}
+
 const accepted = {1: ['variable'], 2: ['constant'], 3: ['constant'], 4: ['variable'], 5: ['b', 'n', 'x'], 6: ['12', 'twelve'], 7: ['five more apples than x', 'x apples plus 5', 'x plus 5 apples', '5 more than x'], 8: ['two dollars less than m', 'm minus 2', 'spending 2 dollars', '2 less than m'], 9: ['the cost of 3 notebooks', '3 times the price', '3 notebooks cost'], 10: ['half the distance', 'the distance split into 2 equal parts', 'd divided by 2'], 11: ['y + 8', '8 + y'], 12: ['n - 4'], 13: ['6t', '6*t'], 14: ['k / 9', 'k/9'], 15: ['13'], 16: ['7'], 17: ['24'], 18: ['6'], 19: ['7 < 10'], 20: ['12 >= 12', '12 ≥ 12'], 21: ['<'], 22: ['>'], 23: ['='], 24: ['>=', '≥'], 25: ['x < 20'], 26: ['y >= 6', 'y ≥ 6'], 27: ['s <= 40', 's ≤ 40'], 28: ['a > 12'], 29: ['11'], 30: ['20'], 31: ['because brackets change the order of operations', 'they make you do 3+2 first', 'because you do 3 + 2 first'], 32: ['9'], 33: ['9'], 34: ['5c', '5*c'], 35: ['24 / n', '24/n'], 36: ['expression'], 37: ['equation'], 38: ['r + 6 = 15', '6 + r = 15'], 39: ['3p = 21', 'p*3 = 21'], 40: ['3x = 12', 'x*3 = 12'], 41: ['n - 4 = 10'], 42: ['x = 6', '6'], 43: ['y = 11', '11'], 44: ['m = 5', '5'], 45: ['p = 21', '21'], 46: ['2^4', '2**4'], 47: ['5 x 5 x 5', '5×5×5', '5*5*5'], 48: ['4'], 49: ['2'], 50: ['27']};
 
 function normalize(str) {
@@ -711,7 +746,7 @@ function updateScore() {
   document.getElementById("scoreBox").textContent = `Score: ${score} / 50 checked correct`;
 }
 
-window.practiceMathAppliedMath.applyMathFormatting();
+applyMathFormatting();
 </script>
 </body>
 </html>
