@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Section 2.2 Exercises</title>
+  <style>
+    :root{
+      --teal:#1f7f9e;
+      --deep:#0b3b4d;
+      --text:#111;
+      --muted:#5b6b73;
+      --bg:#f4f5f6;
+      --panel:#ffffff;
+      --line:#d7e1e6;
+      --ok:#0a7a39;
+      --bad:#b42318;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .page{
+      max-width:1280px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+    .chapter-bar{
+      display:flex;
+      align-items:flex-start;
+      gap:22px;
+      margin-bottom:18px;
+    }
+    .chapter-num, .section-icon{
+      width:60px;
+      min-width:60px;
+      height:58px;
+      border:2px solid var(--teal);
+      color:var(--teal);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:28px;
+      background:#fff;
+    }
+    .section-icon{
+      font-size:26px;
+    }
+    .chapter-title{
+      color:var(--teal);
+      font-size:34px;
+      font-weight:700;
+      margin-top:8px;
+      letter-spacing:.2px;
+    }
+    .toc{
+      margin:14px 0 34px 108px;
+      border-left:10px solid #eceeef;
+      padding-left:18px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size:32px;
+      background:transparent;
+    }
+    .toc-row{
+      display:flex;
+      justify-content:flex-start;
+      gap:16px;
+      margin:6px 0;
+      flex-wrap:wrap;
+    }
+    .toc-row b{font-weight:800}
+
+    .section-head{
+      display:flex;
+      align-items:flex-start;
+      gap:22px;
+      margin:28px 0 10px;
+    }
+    .section-title{
+      color:var(--teal);
+      font-size:36px;
+      font-weight:700;
+      margin-top:8px;
+    }
+    .practice{
+      font-family: Arial, Helvetica, sans-serif;
+      font-size:34px;
+      font-weight:800;
+      margin:18px 0 34px;
+      color:var(--deep);
+    }
+    .subhead{
+      color:var(--teal);
+      font-style:italic;
+      font-weight:700;
+      font-size:28px;
+      margin:28px 0 12px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .instruction{
+      color:var(--teal);
+      font-style:italic;
+      font-size:24px;
+      margin:0 0 18px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .grid-3, .grid-2{
+      display:grid;
+      gap:16px 34px;
+      margin-bottom:26px;
+    }
+    .grid-3{grid-template-columns:repeat(3, minmax(0, 1fr));}
+    .grid-2{grid-template-columns:repeat(2, minmax(0, 1fr));}
+    .q{
+      padding:6px 0 10px;
+    }
+    .prompt{
+      font-size:24px;
+      margin-bottom:10px;
+    }
+    .num{
+      font-weight:800;
+      margin-right:8px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .response{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:4px;
+    }
+    input[type="text"], textarea{
+      flex:1 1 280px;
+      width:100%;
+      border:1px solid #b9c7ce;
+      border-radius:8px;
+      padding:10px 12px;
+      background:#fff;
+      font-size:16px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    textarea{min-height:94px; resize:vertical;}
+    button{
+      border:1px solid var(--teal);
+      background:var(--teal);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:8px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    button:hover{filter:brightness(.96)}
+    .result{
+      width:100%;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size:15px;
+      margin-top:8px;
+      border-left:4px solid var(--line);
+      padding:8px 10px;
+      background:#fff;
+      border-radius:6px;
+      display:none;
+      white-space:pre-wrap;
+    }
+    .result.ok{border-left-color:var(--ok); color:var(--ok); display:block;}
+    .result.bad{border-left-color:var(--bad); color:var(--bad); display:block;}
+    .writing-grid .q{padding-bottom:18px}
+    .everyday-title, .writing-title{
+      font-family: Arial, Helvetica, sans-serif;
+      font-size:34px;
+      font-weight:800;
+      color:var(--deep);
+      margin:28px 0 14px;
+    }
+    .footer-note{
+      margin-top:30px;
+      color:var(--muted);
+      font-size:14px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .tight{letter-spacing:-.2px}
+    @media (max-width: 980px){
+      .grid-3{grid-template-columns:1fr 1fr;}
+      .toc{margin-left:78px; font-size:24px;}
+      .chapter-title,.section-title{font-size:28px}
+      .practice,.everyday-title,.writing-title{font-size:28px}
+      .subhead{font-size:24px}
+      .instruction{font-size:21px}
+      .prompt{font-size:22px}
+    }
+    @media (max-width: 640px){
+      .page{padding:18px 14px 48px}
+      .grid-3,.grid-2{grid-template-columns:1fr; gap:12px}
+      .chapter-bar,.section-head{gap:14px}
+      .chapter-num,.section-icon{width:48px; min-width:48px; height:48px; font-size:24px}
+      .toc{margin-left:0; padding-left:12px; border-left:8px solid #eceeef; font-size:20px}
+      .chapter-title,.section-title{font-size:24px; margin-top:4px}
+      .practice,.everyday-title,.writing-title{font-size:24px}
+      .subhead{font-size:22px}
+      .instruction{font-size:19px}
+      .prompt{font-size:18px}
+      .response{flex-direction:column; align-items:stretch}
+      button{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="chapter-bar">
+      <div class="chapter-num">2</div>
+      <div class="chapter-title">The Language of Algebra &nbsp; 95</div>
+    </div>
+
+    <div class="toc">
+      <div class="toc-row"><span>Introduction to the Language of Algebra</span><span>95</span></div>
+      <div class="toc-row"><b>2.1</b><span>Use the Language of Algebra</span><span>95</span></div>
+      <div class="toc-row"><b>2.2</b><span>Evaluate, Simplify, and Translate Expressions</span><span>113</span></div>
+      <div class="toc-row"><b>2.3</b><span>Solving Equations Using the Subtraction and Addition Properties of Equality</span><span>126</span></div>
+      <div class="toc-row"><b>2.4</b><span>Find Multiples and Factors</span><span>139</span></div>
+      <div class="toc-row"><b>2.5</b><span>Prime Factorization and the Least Common Multiple</span><span>152</span></div>
+      <div class="toc-row"><span>Chapter Review</span><span>162</span></div>
+      <div class="toc-row"><span>Exercises</span><span>165</span></div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-icon">☝</div>
+      <div class="section-title">SECTION 2.2 EXERCISES</div>
+    </div>
+
+    <div class="practice">Practice Makes Perfect</div>
+
+    <div class="subhead">Evaluate Algebraic Expressions</div>
+    <div class="instruction">In the following exercises, evaluate the expression for the given value.</div>
+    <div class="grid-3" id="group-69-88"></div>
+
+    <div class="subhead">Identify Terms, Coefficients, and Like Terms</div>
+    <div class="instruction">In the following exercises, list the terms in the given expression.</div>
+    <div class="grid-3" id="group-89-92"></div>
+
+    <div class="instruction">In the following exercises, identify the coefficient of the given term.</div>
+    <div class="grid-3" id="group-93-96"></div>
+
+    <div class="instruction">In the following exercises, identify all sets of like terms.</div>
+    <div class="grid-3" id="group-97-100"></div>
+
+    <div class="subhead">Simplify Expressions by Combining Like Terms</div>
+    <div class="instruction">In the following exercises, simplify the given expression by combining like terms.</div>
+    <div class="grid-3" id="group-101-116"></div>
+
+    <div class="subhead">Translate English Phrases into Algebraic Expressions</div>
+    <div class="instruction">In the following exercises, translate the given word phrase into an algebraic expression.</div>
+    <div class="grid-3" id="group-117-136"></div>
+
+    <div class="instruction">In the following exercises, write an algebraic expression.</div>
+    <div class="grid-3" id="group-137-142"></div>
+
+    <div class="everyday-title">Everyday Math</div>
+    <div class="instruction">In the following exercises, use algebraic expressions to solve the problem.</div>
+    <div class="grid-2" id="group-143-144"></div>
+
+    <div class="writing-title">Writing Exercises</div>
+    <div class="grid-2 writing-grid" id="group-145-146"></div>
+
+    <div class="footer-note">This page is structured so more chapter sections can be added later using the same question data format.</div>
+  </div>
+
+  <script>
+    const questions = [
+      {n:69,g:'group-69-88',p:'7x + 8 when x = 2',a:['22']},
+      {n:70,g:'group-69-88',p:'9x + 7 when x = 3',a:['34']},
+      {n:71,g:'group-69-88',p:'5x − 4 when x = 6',a:['26']},
+      {n:72,g:'group-69-88',p:'8x − 6 when x = 7',a:['50']},
+      {n:73,g:'group-69-88',p:'x<sup>2</sup> when x = 12',a:['144']},
+      {n:74,g:'group-69-88',p:'x<sup>3</sup> when x = 5',a:['125']},
+      {n:75,g:'group-69-88',p:'x<sup>5</sup> when x = 2',a:['32']},
+      {n:76,g:'group-69-88',p:'x<sup>4</sup> when x = 3',a:['81']},
+      {n:77,g:'group-69-88',p:'3<sup>x</sup> when x = 3',a:['27']},
+      {n:78,g:'group-69-88',p:'4<sup>x</sup> when x = 2',a:['16']},
+      {n:79,g:'group-69-88',p:'x<sup>2</sup> + 3x − 7 when x = 4',a:['21']},
+      {n:80,g:'group-69-88',p:'x<sup>2</sup> + 5x − 8 when x = 6',a:['58']},
+      {n:81,g:'group-69-88',p:'2x + 4y − 5 when x = 7, y = 8',a:['49']},
+      {n:82,g:'group-69-88',p:'6x + 3y − 9 when x = 6, y = 9',a:['54']},
+      {n:83,g:'group-69-88',p:'(x − y)<sup>2</sup> when x = 10, y = 7',a:['9']},
+      {n:84,g:'group-69-88',p:'(x + y)<sup>2</sup> when x = 6, y = 9',a:['225']},
+      {n:85,g:'group-69-88',p:'a<sup>2</sup> + b<sup>2</sup> when a = 3, b = 8',a:['73']},
+      {n:86,g:'group-69-88',p:'r<sup>2</sup> − s<sup>2</sup> when r = 12, s = 5',a:['119']},
+      {n:87,g:'group-69-88',p:'2l + 2w when l = 15, w = 12',a:['54']},
+      {n:88,g:'group-69-88',p:'2l + 2w when l = 18, w = 14',a:['64']},
+
+      {n:89,g:'group-89-92',p:'15x<sup>2</sup> + 6x + 2',a:['15x^2, 6x, 2','15x², 6x, 2']},
+      {n:90,g:'group-89-92',p:'11x<sup>2</sup> + 8x + 5',a:['11x^2, 8x, 5','11x², 8x, 5']},
+      {n:91,g:'group-89-92',p:'10y<sup>3</sup> + y + 2',a:['10y^3, y, 2','10y³, y, 2']},
+      {n:92,g:'group-89-92',p:'9y<sup>3</sup> + y + 5',a:['9y^3, y, 5','9y³, y, 5']},
+
+      {n:93,g:'group-93-96',p:'8a',a:['8']},
+      {n:94,g:'group-93-96',p:'13m',a:['13']},
+      {n:95,g:'group-93-96',p:'5r<sup>2</sup>',a:['5']},
+      {n:96,g:'group-93-96',p:'6x<sup>3</sup>',a:['6']},
+
+      {n:97,g:'group-97-100',p:'x<sup>3</sup>, 8x, 14, 8y, 5, 8x<sup>3</sup>',a:['x^3 and 8x^3; 14 and 5','x^3, 8x^3; 14, 5','x³ and 8x³; 14 and 5']},
+      {n:98,g:'group-97-100',p:'6z, 3w<sup>2</sup>, 1, 6z<sup>2</sup>, 4z, w<sup>2</sup>',a:['6z and 4z; 3w^2 and w^2','6z, 4z; 3w^2, w^2','6z and 4z; 3w² and w²']},
+      {n:99,g:'group-97-100',p:'9a, a<sup>2</sup>, 16ab, 16b<sup>2</sup>, 4ab, 9b<sup>2</sup>',a:['16ab and 4ab; 16b^2 and 9b^2','16ab, 4ab; 16b^2, 9b^2','16ab and 4ab; 16b² and 9b²']},
+      {n:100,g:'group-97-100',p:'3, 25r<sup>2</sup>, 10s, 10r, 4r<sup>2</sup>, 3s',a:['25r^2 and 4r^2; 10s and 3s','25r^2, 4r^2; 10s, 3s','25r² and 4r²; 10s and 3s']},
+
+      {n:101,g:'group-101-116',p:'10x + 3x',a:['13x']},
+      {n:102,g:'group-101-116',p:'15x + 4x',a:['19x']},
+      {n:103,g:'group-101-116',p:'17a + 9a',a:['26a']},
+      {n:104,g:'group-101-116',p:'18z + 9z',a:['27z']},
+      {n:105,g:'group-101-116',p:'4c + 2c + c',a:['7c']},
+      {n:106,g:'group-101-116',p:'6y + 4y + y',a:['11y']},
+      {n:107,g:'group-101-116',p:'9x + 3x + 8',a:['12x + 8','12x+8']},
+      {n:108,g:'group-101-116',p:'8a + 5a + 9',a:['13a + 9','13a+9']},
+      {n:109,g:'group-101-116',p:'7u + 2 + 3u + 1',a:['10u + 3','10u+3']},
+      {n:110,g:'group-101-116',p:'8d + 6 + 2d + 5',a:['10d + 11','10d+11']},
+      {n:111,g:'group-101-116',p:'7p + 6 + 5p + 4',a:['12p + 10','12p+10']},
+      {n:112,g:'group-101-116',p:'8x + 7 + 4x − 5',a:['12x + 2','12x+2']},
+      {n:113,g:'group-101-116',p:'10a + 7 + 5a − 2 + 7a − 4',a:['22a + 1','22a+1']},
+      {n:114,g:'group-101-116',p:'7c + 4 + 6c − 3 + 9c − 1',a:['22c']},
+      {n:115,g:'group-101-116',p:'3x<sup>2</sup> + 12x + 11 + 14x<sup>2</sup> + 8x + 5',a:['17x^2 + 20x + 16','17x² + 20x + 16','17x^2+20x+16']},
+      {n:116,g:'group-101-116',p:'5b<sup>2</sup> + 9b + 10 + 2b<sup>2</sup> + 3b − 4',a:['7b^2 + 12b + 6','7b² + 12b + 6','7b^2+12b+6']},
+
+      {n:117,g:'group-117-136',p:'The sum of 8 and 12',a:['8 + 12','8+12']},
+      {n:118,g:'group-117-136',p:'The sum of 9 and 1',a:['9 + 1','9+1']},
+      {n:119,g:'group-117-136',p:'The difference of 14 and 9',a:['14 - 9','14−9','14-9']},
+      {n:120,g:'group-117-136',p:'8 less than 19',a:['19 - 8','19−8','19-8']},
+      {n:121,g:'group-117-136',p:'The product of 9 and 7',a:['9 * 7','9×7','9(7)','9·7','9x7']},
+      {n:122,g:'group-117-136',p:'The product of 8 and 7',a:['8 * 7','8×7','8(7)','8·7','8x7']},
+      {n:123,g:'group-117-136',p:'The quotient of 36 and 9',a:['36 / 9','36÷9','36/9']},
+      {n:124,g:'group-117-136',p:'The quotient of 42 and 7',a:['42 / 7','42÷7','42/7']},
+      {n:125,g:'group-117-136',p:'The difference of x and 4',a:['x - 4','x−4','x-4']},
+      {n:126,g:'group-117-136',p:'3 less than x',a:['x - 3','x−3','x-3']},
+      {n:127,g:'group-117-136',p:'The product of 6 and y',a:['6y','6*y']},
+      {n:128,g:'group-117-136',p:'The product of 9 and y',a:['9y','9*y']},
+      {n:129,g:'group-117-136',p:'The sum of 8x and 3x',a:['8x + 3x','8x+3x']},
+      {n:130,g:'group-117-136',p:'The sum of 13x and 3x',a:['13x + 3x','13x+3x']},
+      {n:131,g:'group-117-136',p:'The quotient of y and 3',a:['y / 3','y÷3','y/3']},
+      {n:132,g:'group-117-136',p:'The quotient of y and 8',a:['y / 8','y÷8','y/8']},
+      {n:133,g:'group-117-136',p:'Eight times the difference of y and nine',a:['8(y - 9)','8(y−9)','8(y-9)']},
+      {n:134,g:'group-117-136',p:'Seven times the difference of y and one',a:['7(y - 1)','7(y−1)','7(y-1)']},
+      {n:135,g:'group-117-136',p:'Five times the sum of x and y',a:['5(x + y)','5(x+y)']},
+      {n:136,g:'group-117-136',p:'Nine times five less than twice x',a:['9(2x - 5)','9(2x−5)','9(2x-5)']},
+
+      {n:137,g:'group-137-142',p:'Adele bought a skirt and a blouse. The skirt cost $15 more than the blouse. Let b represent the cost of the blouse. Write an expression for the cost of the skirt.',a:['b + 15','b+15']},
+      {n:138,g:'group-137-142',p:'Eric has rock and classical CDs in his car. The number of rock CDs is 3 more than the number of classical CDs. Let c represent the number of classical CDs. Write an expression for the number of rock CDs.',a:['c + 3','c+3']},
+      {n:139,g:'group-137-142',p:'The number of girls in a second-grade class is 4 less than the number of boys. Let b represent the number of boys. Write an expression for the number of girls.',a:['b - 4','b−4','b-4']},
+      {n:140,g:'group-137-142',p:'Marcella has 6 fewer male cousins than female cousins. Let f represent the number of female cousins. Write an expression for the number of boy cousins.',a:['f - 6','f−6','f-6']},
+      {n:141,g:'group-137-142',p:'Greg has nickels and pennies in his pocket. The number of pennies is seven less than twice the number of nickels. Let n represent the number of nickels. Write an expression for the number of pennies.',a:['2n - 7','2n−7','2n-7']},
+      {n:142,g:'group-137-142',p:'Jeannette has $5 and $10 bills in her wallet. The number of fives is three more than six times the number of tens. Let t represent the number of tens. Write an expression for the number of fives.',a:['6t + 3','6t+3']},
+
+      {n:143,g:'group-143-144',p:'Car insurance Justin’s car insurance has a $750 deductible per incident. This means that he pays $750 and his insurance company will pay all costs beyond $750. If Justin files a claim for $2,100, how much will he pay, and how much will his insurance company pay?',a:['Justin pays $750 and the insurance company pays $1,350.','750 and 1350','He pays 750, insurance pays 1350']},
+      {n:144,g:'group-143-144',p:'Home insurance Pam and Armando’s home insurance has a $2,500 deductible per incident. This means that they pay $2,500 and their insurance company will pay all costs beyond $2,500. If Pam and Armando file a claim for $19,400, how much will they pay, and how much will their insurance company pay?',a:['They pay $2,500 and the insurance company pays $16,900.','2500 and 16900','They pay 2500, insurance pays 16900']},
+
+      {n:145,g:'group-145-146',type:'textarea',p:'Explain why “the sum of x and y” is the same as “the sum of y and x,” but “the difference of x and y” is not the same as “the difference of y and x.” Try substituting two random numbers for x and y to help you explain.',a:['The sum of x and y is x + y, and the sum of y and x is y + x. These are equal because addition is commutative. But the difference of x and y is x − y, while the difference of y and x is y − x, and these are usually different because subtraction is not commutative. For example, if x = 5 and y = 2, then x + y = y + x = 7, but x − y = 3 and y − x = −3.'],kw:['sum','x+y','y+x','addition','commutative','difference','x-y','y-x','subtraction','not']},
+      {n:146,g:'group-145-146',type:'textarea',p:'Explain the difference between “4 times the sum of x and y” and “the sum of 4 times x and y.”',a:['“4 times the sum of x and y” means 4(x + y). “The sum of 4 times x and y” means 4x + y. They are different because in the first expression the 4 multiplies both x and y, but in the second expression the 4 multiplies only x.'],kw:['4(x+y)','4x+y','different','multiplies both','only x']}
+    ];
+
+    function normalize(s){
+      return String(s)
+        .toLowerCase()
+        .replace(/<[^>]*>/g,'')
+        .replace(/[−–—]/g,'-')
+        .replace(/[×·]/g,'*')
+        .replace(/÷/g,'/')
+        .replace(/[²]/g,'^2')
+        .replace(/[³]/g,'^3')
+        .replace(/\s+/g,'')
+        .trim();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;');
+    }
+
+    function checkAnswer(q, value){
+      const raw = value.trim();
+      if(!raw) return {ok:false, msg:'Please enter an answer.\nModel answer: ' + q.a[0]};
+      if(q.kw){
+        const user = raw.toLowerCase();
+        const matched = q.kw.filter(k => user.includes(k.toLowerCase().replace(/\s+/g,'')) || user.replace(/\s+/g,'').includes(k.toLowerCase().replace(/\s+/g,'')));
+        const ok = matched.length >= Math.max(3, Math.ceil(q.kw.length/2));
+        return {
+          ok,
+          msg:(ok ? 'Good work. Your response matches the key idea.\n' : 'Not quite a close enough match.\n') + 'Model answer: ' + q.a[0]
+        };
+      }
+      const userNorm = normalize(raw);
+      const ok = q.a.some(ans => normalize(ans) === userNorm);
+      return {
+        ok,
+        msg:(ok ? 'Correct.\n' : 'Not correct.\n') + 'Model answer: ' + q.a[0]
+      };
+    }
+
+    function renderQuestion(q){
+      const wrap = document.createElement('div');
+      wrap.className = 'q';
+
+      const prompt = document.createElement('div');
+      prompt.className = 'prompt';
+      prompt.innerHTML = `<span class="num">${q.n}.</span> ${q.p}`;
+      wrap.appendChild(prompt);
+
+      const response = document.createElement('div');
+      response.className = 'response';
+
+      const field = q.type === 'textarea' ? document.createElement('textarea') : document.createElement('input');
+      if(q.type !== 'textarea') field.type = 'text';
+      field.placeholder = q.type === 'textarea' ? 'Type your explanation here' : 'Type your answer';
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Check';
+
+      const result = document.createElement('div');
+      result.className = 'result';
+
+      btn.addEventListener('click', () => {
+        const checked = checkAnswer(q, field.value);
+        result.className = 'result ' + (checked.ok ? 'ok' : 'bad');
+        result.textContent = checked.msg;
+      });
+
+      response.appendChild(field);
+      response.appendChild(btn);
+      response.appendChild(result);
+      wrap.appendChild(response);
+      return wrap;
+    }
+
+    questions.forEach(q => {
+      const group = document.getElementById(q.g);
+      if(group) group.appendChild(renderQuestion(q));
+    });
+  </script>
+</body>
+</html>
