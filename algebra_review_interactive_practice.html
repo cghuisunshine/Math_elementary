@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Algebra Practice</title>
+  <style>
+    :root{
+      --bg:#f4f7f8;
+      --card:#ffffff;
+      --ink:#102a43;
+      --muted:#486581;
+      --accent:#1f7a8c;
+      --accent-2:#2f9e44;
+      --warn:#c92a2a;
+      --line:#d9e2ec;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+    }
+    .hero{
+      background:linear-gradient(135deg, #e8f4f8, #ffffff);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:24px;
+      box-shadow:0 10px 24px rgba(16,42,67,.06);
+      margin-bottom:22px;
+    }
+    h1{
+      margin:0 0 10px;
+      color:var(--accent);
+      font-size:2rem;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:1.05rem;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+    .chip{
+      background:#fff;
+      border:1px solid var(--line);
+      color:var(--accent);
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:700;
+      font-size:.95rem;
+    }
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0 0 20px;
+    }
+    button{
+      border:none;
+      border-radius:10px;
+      padding:11px 16px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+    }
+    button.secondary{
+      background:#fff;
+      color:var(--accent);
+      border:1px solid var(--line);
+    }
+    .section{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 8px 18px rgba(16,42,67,.05);
+      margin-bottom:18px;
+    }
+    .section h2{
+      margin:0 0 8px;
+      color:var(--accent);
+      font-size:1.45rem;
+    }
+    .section p.lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-style:italic;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:14px;
+    }
+    .question{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fbfdfe;
+    }
+    .qhead{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .num{
+      min-width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#e7f5f8;
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+    }
+    .prompt{
+      font-size:1rem;
+      font-weight:600;
+    }
+    .answer-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    input[type="text"]{
+      flex:1 1 220px;
+      padding:11px 12px;
+      border:1px solid #bcccdc;
+      border-radius:10px;
+      font-size:1rem;
+      background:#fff;
+    }
+    .feedback{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:.95rem;
+      display:none;
+      white-space:pre-wrap;
+    }
+    .feedback.ok{display:block; background:#ebfbee; color:#1b5e20; border:1px solid #b7e4c7;}
+    .feedback.bad{display:block; background:#fff5f5; color:#9b2226; border:1px solid #f5c2c7;}
+    .summary{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .stat{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      text-align:center;
+    }
+    .stat .big{
+      font-size:1.8rem;
+      font-weight:800;
+      color:var(--accent);
+    }
+    .stat .label{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+    .note{
+      color:var(--muted);
+      font-size:.92rem;
+      margin-top:8px;
+    }
+    @media (max-width: 800px){
+      .grid,.summary{grid-template-columns:1fr}
+      .hero{padding:18px}
+      h1{font-size:1.65rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Interactive Algebra Practice</h1>
+      <p class="subtitle">Review what you already know, then practice the new ideas with instant checking.</p>
+      <div class="chips">
+        <div class="chip">Review: evaluate expressions</div>
+        <div class="chip">Terms</div>
+        <div class="chip">Coefficients</div>
+        <div class="chip">Like terms</div>
+        <div class="chip">Combining like terms</div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="stat"><div class="big" id="correctCount">0</div><div class="label">Correct</div></div>
+      <div class="stat"><div class="big" id="checkedCount">0</div><div class="label">Checked</div></div>
+      <div class="stat"><div class="big" id="scorePct">0%</div><div class="label">Score</div></div>
+    </div>
+
+    <div class="toolbar">
+      <button id="checkAllBtn">Check All</button>
+      <button class="secondary" id="showAllBtn">Show All Answers</button>
+      <button class="secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="section">
+      <h2>Review: Evaluate Expressions When Variables Are Given</h2>
+      <p class="lead">Substitute the given value into the expression, then simplify.</p>
+      <div class="grid" id="reviewGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Learned: Terms, Coefficients, and Like Terms</h2>
+      <p class="lead">Identify the parts of each expression.</p>
+      <div class="grid" id="vocabGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Learned: Combining Like Terms</h2>
+      <p class="lead">Combine only the terms that have the same variable part.</p>
+      <div class="grid" id="combineGrid"></div>
+      <div class="note">Accepted answers ignore spaces, so <b>7x + 3</b> and <b>7x+3</b> are both fine.</div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      review: [
+        {id:1, prompt:'Evaluate 4x + 3 when x = 5.', answers:['23']},
+        {id:2, prompt:'Evaluate 2a + 7 when a = 9.', answers:['25']},
+        {id:3, prompt:'Evaluate y² − 4 when y = 6.', answers:['32','6^2-4']},
+        {id:4, prompt:'Evaluate 3m + 2n when m = 4 and n = 5.', answers:['22']},
+        {id:5, prompt:'Evaluate (p + q)² when p = 2 and q = 3.', answers:['25']},
+        {id:6, prompt:'Evaluate 5r − s when r = 7 and s = 8.', answers:['27']}
+      ],
+      vocab: [
+        {id:7, prompt:'List the terms in 8x + 3y − 5.', answers:['8x, 3y, -5','8x,3y,-5']},
+        {id:8, prompt:'What is the coefficient of 6a?', answers:['6']},
+        {id:9, prompt:'What is the coefficient of 9b²?', answers:['9']},
+        {id:10, prompt:'Identify the like terms: 4x, 7, 9x, 3y, 2, y.', answers:['4x and 9x; 7 and 2','4x, 9x; 7, 2']},
+        {id:11, prompt:'Are 5m and 2m like terms? Answer yes or no.', answers:['yes']},
+        {id:12, prompt:'Are 3x and 3x² like terms? Answer yes or no.', answers:['no']}
+      ],
+      combine: [
+        {id:13, prompt:'Simplify 3x + 5x.', answers:['8x']},
+        {id:14, prompt:'Simplify 7y − 2y + 4.', answers:['5y + 4','5y+4']},
+        {id:15, prompt:'Simplify 6a + 2 + 4a − 7.', answers:['10a - 5','10a-5']},
+        {id:16, prompt:'Simplify 9m + 3n + 2m.', answers:['11m + 3n','11m+3n']},
+        {id:17, prompt:'Simplify 2x² + 5x + 3x² − x.', answers:['5x^2 + 4x','5x² + 4x','5x^2+4x']},
+        {id:18, prompt:'Simplify 4p + 6 + p + 9.', answers:['5p + 15','5p+15']}
+      ]
+    };
+
+    const state = {};
+
+    function normalize(s){
+      return String(s)
+        .toLowerCase()
+        .replace(/[−–—]/g,'-')
+        .replace(/[×·]/g,'*')
+        .replace(/÷/g,'/')
+        .replace(/²/g,'^2')
+        .replace(/\s+/g,'')
+        .trim();
+    }
+
+    function createQuestion(item, parentId){
+      const parent = document.getElementById(parentId);
+      const el = document.createElement('div');
+      el.className = 'question';
+      el.innerHTML = `
+        <div class="qhead">
+          <div class="num">${item.id}</div>
+          <div class="prompt">${item.prompt}</div>
+        </div>
+        <div class="answer-row">
+          <input type="text" id="input-${item.id}" placeholder="Type your answer" />
+          <button type="button" data-id="${item.id}">Check</button>
+        </div>
+        <div class="feedback" id="feedback-${item.id}"></div>
+      `;
+      parent.appendChild(el);
+
+      el.querySelector('button').addEventListener('click', () => checkOne(item));
+    }
+
+    function checkOne(item, forceShow = false){
+      const input = document.getElementById(`input-${item.id}`);
+      const feedback = document.getElementById(`feedback-${item.id}`);
+      const user = input.value.trim();
+      const correct = item.answers.some(a => normalize(a) === normalize(user));
+
+      state[item.id] = {checked:true, correct};
+
+      if(!user && !forceShow){
+        feedback.className = 'feedback bad';
+        feedback.textContent = `Please enter an answer.\nModel answer: ${item.answers[0]}`;
+      } else if(correct){
+        feedback.className = 'feedback ok';
+        feedback.textContent = `Correct.\nModel answer: ${item.answers[0]}`;
+      } else {
+        feedback.className = 'feedback bad';
+        feedback.textContent = `Not correct.\nModel answer: ${item.answers[0]}`;
+      }
+      updateScore();
+    }
+
+    function showAllAnswers(){
+      allQuestions().forEach(item => {
+        const feedback = document.getElementById(`feedback-${item.id}`);
+        feedback.className = 'feedback ok';
+        feedback.textContent = `Model answer: ${item.answers[0]}`;
+        if(!state[item.id]) state[item.id] = {checked:false, correct:false};
+      });
+      updateScore();
+    }
+
+    function resetAll(){
+      allQuestions().forEach(item => {
+        document.getElementById(`input-${item.id}`).value = '';
+        const feedback = document.getElementById(`feedback-${item.id}`);
+        feedback.className = 'feedback';
+        feedback.textContent = '';
+        delete state[item.id];
+      });
+      updateScore();
+    }
+
+    function allQuestions(){
+      return [...data.review, ...data.vocab, ...data.combine];
+    }
+
+    function updateScore(){
+      const checked = Object.values(state).filter(v => v.checked).length;
+      const correct = Object.values(state).filter(v => v.correct).length;
+      const pct = checked ? Math.round(correct / checked * 100) : 0;
+      document.getElementById('checkedCount').textContent = checked;
+      document.getElementById('correctCount').textContent = correct;
+      document.getElementById('scorePct').textContent = `${pct}%`;
+    }
+
+    data.review.forEach(q => createQuestion(q, 'reviewGrid'));
+    data.vocab.forEach(q => createQuestion(q, 'vocabGrid'));
+    data.combine.forEach(q => createQuestion(q, 'combineGrid'));
+
+    document.getElementById('checkAllBtn').addEventListener('click', () => allQuestions().forEach(q => checkOne(q)));
+    document.getElementById('showAllBtn').addEventListener('click', showAllAnswers);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+  </script>
+</body>
+</html>

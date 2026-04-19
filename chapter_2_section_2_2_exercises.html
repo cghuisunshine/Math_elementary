@@ -170,7 +170,22 @@
       white-space:pre-wrap;
     }
     .result.ok{border-left-color:var(--ok); color:var(--ok); display:block;}
+    .result.warn{border-left-color:#b26b00; color:#8a5a00; display:block;}
     .result.bad{border-left-color:var(--bad); color:var(--bad); display:block;}
+    .result strong{color:var(--text)}
+    .math-inline{
+      white-space:nowrap;
+      display:inline-flex;
+      align-items:flex-start;
+      gap:1px;
+    }
+    .math-exponent{
+      font-size:.72em;
+      line-height:1;
+    }
+    .math-operator{
+      font-weight:700;
+    }
     .writing-grid .q{padding-bottom:18px}
     .everyday-title, .writing-title{
       font-family: Arial, Helvetica, sans-serif;
@@ -178,6 +193,37 @@
       font-weight:800;
       color:var(--deep);
       margin:28px 0 14px;
+    }
+    .settings{
+      margin:10px 0 22px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .settings summary{
+      cursor:pointer;
+      font-weight:700;
+      color:var(--deep);
+    }
+    .settings-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .settings-row label{
+      font-weight:700;
+    }
+    .settings-row input{
+      flex:1 1 320px;
+    }
+    .settings-hint{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:10px;
     }
     .footer-note{
       margin-top:30px;
@@ -262,6 +308,16 @@
     <div class="grid-3" id="group-137-142"></div>
 
     <div class="everyday-title">Everyday Math</div>
+    <details class="settings">
+      <summary>AI grading (optional)</summary>
+      <div class="settings-row">
+        <label for="grade-api-url">Grade API URL</label>
+        <input id="grade-api-url" type="text" placeholder="https://example.com/grade" />
+        <button id="btn-test-api" type="button">Test</button>
+        <span id="api-status" class="result"></span>
+      </div>
+      <div class="settings-hint">Questions 143 to 146 can use the AI grader when available and fall back to the local checker if it fails.</div>
+    </details>
     <div class="instruction">In the following exercises, use algebraic expressions to solve the problem.</div>
     <div class="grid-2" id="group-143-144"></div>
 
@@ -272,6 +328,7 @@
   </div>
 
   <script>
+    const GRADE_API_STORAGE_KEY = 'chapter_2_section_2_2_grade_api_url';
     const questions = [
       {n:69,g:'group-69-88',p:'7x + 8 when x = 2',a:['22']},
       {n:70,g:'group-69-88',p:'9x + 7 when x = 3',a:['34']},
@@ -381,13 +438,46 @@
         .replace(/>/g,'&gt;');
     }
 
-    function checkAnswer(q, value){
+    function normalizeKeywordText(str){
+      return String(str)
+        .toLowerCase()
+        .replace(/<[^>]*>/g,'')
+        .replace(/[−–—]/g,'-')
+        .replace(/[×·]/g,'*')
+        .replace(/÷/g,'/')
+        .replace(/[^a-z0-9+\-*/=]/g,'');
+    }
+
+    function formatExponentHTML(html){
+      return html.replace(
+        /(^|[^\w>])([A-Za-z0-9)]+)\^([A-Za-z0-9]+)/g,
+        function(_, prefix, base, exponent){
+          return prefix + '<span class="math-inline">' + base + '<sup class="math-exponent">' + exponent + '</sup></span>';
+        }
+      );
+    }
+
+    function formatDivisionHTML(html){
+      const operand = '(?:<span class="math-inline">[^<]+<sup class="math-exponent">[^<]+<\\/sup><\\/span>|[A-Za-z0-9]+)';
+      const divisionPattern = new RegExp('(' + operand + ')\\s*\\/\\s*(' + operand + ')', 'g');
+      return html.replace(divisionPattern, '$1 <span class="math-operator">÷</span> $2');
+    }
+
+    function formatMathHTML(html){
+      return formatDivisionHTML(formatExponentHTML(html));
+    }
+
+    function buildResultHTML(message, answer){
+      return escapeHtml(message).replace(/\n/g, '<br>') + '<br><strong>Model answer:</strong> ' + formatMathHTML(answer);
+    }
+
+    function localCheckAnswer(q, value){
       const raw = value.trim();
       if(!raw) return {ok:false, msg:'Please enter an answer.\nModel answer: ' + q.a[0]};
       if(q.kw){
-        const user = raw.toLowerCase();
-        const matched = q.kw.filter(k => user.includes(k.toLowerCase().replace(/\s+/g,'')) || user.replace(/\s+/g,'').includes(k.toLowerCase().replace(/\s+/g,'')));
-        const ok = matched.length >= Math.max(3, Math.ceil(q.kw.length/2));
+        const user = normalizeKeywordText(raw);
+        const matched = q.kw.filter(k => user.includes(normalizeKeywordText(k)));
+        const ok = matched.length >= Math.max(3, Math.ceil(q.kw.length/3));
         return {
           ok,
           msg:(ok ? 'Good work. Your response matches the key idea.\n' : 'Not quite a close enough match.\n') + 'Model answer: ' + q.a[0]
@@ -398,6 +488,147 @@
       return {
         ok,
         msg:(ok ? 'Correct.\n' : 'Not correct.\n') + 'Model answer: ' + q.a[0]
+      };
+    }
+
+    function getGradeApiUrl(){
+      const input = document.getElementById('grade-api-url');
+      const url = input && input.value ? input.value.trim() : '';
+      return url || null;
+    }
+
+    function saveGradeApiUrl(){
+      const url = getGradeApiUrl();
+      try{
+        localStorage.setItem(GRADE_API_STORAGE_KEY, url || '');
+      }catch(_){}
+    }
+
+    function setApiStatus(text, kind){
+      const apiStatus = document.getElementById('api-status');
+      if(!apiStatus) return;
+      apiStatus.className = kind ? 'result ' + kind : 'result';
+      apiStatus.innerHTML = text ? escapeHtml(text) : '';
+    }
+
+    async function fetchJsonWithTimeout(url, options, timeoutMs){
+      const controller = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = setTimeout(() => {
+        if(controller) controller.abort();
+      }, timeoutMs);
+
+      try{
+        const requestOptions = controller ? {...options, signal: controller.signal} : options;
+        const resp = await fetch(url, requestOptions);
+        const text = await resp.text().catch(() => '');
+        let data = null;
+        try{
+          data = text ? JSON.parse(text) : null;
+        }catch(_){
+          data = null;
+        }
+        return {ok:resp.ok, status:resp.status, data, text};
+      }catch(error){
+        if(error && error.name === 'AbortError'){
+          return {ok:false, status:0, data:null, text:'', aborted:true};
+        }
+        throw error;
+      }finally{
+        clearTimeout(timer);
+      }
+    }
+
+    function extractFirstGradeResult(data){
+      if(!data) return null;
+      if(Array.isArray(data.results) && data.results[0]) return data.results[0];
+      if(data.result && Array.isArray(data.result.results) && data.result.results[0]) return data.result.results[0];
+      if(data.model_result && Array.isArray(data.model_result.results) && data.model_result.results[0]) return data.model_result.results[0];
+      return null;
+    }
+
+    function deriveHealthUrl(gradeUrl){
+      try{
+        const url = new URL(gradeUrl);
+        url.search = '';
+        url.hash = '';
+        if(url.pathname.endsWith('/grade')){
+          url.pathname = url.pathname.replace(/\/grade$/, '/health');
+        }else{
+          url.pathname = url.pathname.replace(/\/+$/, '') + '/health';
+        }
+        return url.toString();
+      }catch(_){
+        return null;
+      }
+    }
+
+    async function testApi(){
+      const gradeUrl = getGradeApiUrl();
+      if(!gradeUrl){
+        setApiStatus('Set a URL first.', 'bad');
+        return;
+      }
+
+      setApiStatus('Testing...', 'warn');
+
+      try{
+        const healthUrl = deriveHealthUrl(gradeUrl);
+        if(!healthUrl){
+          setApiStatus('Invalid URL.', 'bad');
+          return;
+        }
+
+        const {ok, status, data, aborted} = await fetchJsonWithTimeout(healthUrl, {method:'GET'}, 4000);
+        if(aborted){
+          setApiStatus('Health check timed out.', 'bad');
+          return;
+        }
+        if(!ok){
+          setApiStatus('Health check failed (' + status + ').', 'bad');
+          return;
+        }
+
+        const healthy = !!(data && (data.status === 'ok' || data.ok === true));
+        setApiStatus(healthy ? 'OK' : 'OK (nonstandard response)', healthy ? 'ok' : 'warn');
+      }catch(_){
+        setApiStatus('Health check failed.', 'bad');
+      }
+    }
+
+    function shouldUseAi(q){
+      return q.n >= 143 && q.n <= 146;
+    }
+
+    async function gradeWithAi(q, userText){
+      const gradeUrl = getGradeApiUrl();
+      if(!gradeUrl || !shouldUseAi(q)) return null;
+
+      const pair = {
+        question: String(q.p).replace(/<[^>]*>/g, ''),
+        answer: userText,
+        reference_answer: q.a[0]
+      };
+
+      const {ok, status, data, text, aborted} = await fetchJsonWithTimeout(
+        gradeUrl,
+        {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({pairs:[pair]})
+        },
+        60000
+      );
+
+      if(aborted) throw new Error('timeout');
+
+      const first = extractFirstGradeResult(data);
+      if(!ok || !first){
+        throw new Error((text || ('bad_response_' + status)).slice(0, 160));
+      }
+
+      return {
+        ok:first.verdict === 'correct',
+        msg:(first.verdict === 'correct' ? 'Correct.\n' : 'Wrong.\n') + 'AI analysis: ' + (first.explanation || 'No explanation provided.') + '\nModel answer: ' + q.a[0]
       };
     }
 
@@ -423,10 +654,40 @@
       const result = document.createElement('div');
       result.className = 'result';
 
-      btn.addEventListener('click', () => {
-        const checked = checkAnswer(q, field.value);
-        result.className = 'result ' + (checked.ok ? 'ok' : 'bad');
-        result.textContent = checked.msg;
+      btn.addEventListener('click', async () => {
+        if(result.className !== 'result'){
+          result.className = 'result';
+          result.innerHTML = '';
+          return;
+        }
+        const gradeUrl = getGradeApiUrl();
+        const rawValue = field.value;
+        const trimmedValue = rawValue.trim();
+        saveGradeApiUrl();
+        btn.disabled = true;
+        let checked;
+        try{
+          if(!trimmedValue){
+            checked = localCheckAnswer(q, rawValue);
+          }else if(gradeUrl && shouldUseAi(q)){
+            setApiStatus('AI grading enabled.', 'ok');
+            checked = await gradeWithAi(q, trimmedValue);
+          }else{
+            checked = localCheckAnswer(q, rawValue);
+          }
+        }catch(_){
+          const local = localCheckAnswer(q, rawValue);
+          checked = {
+            ok:local.ok,
+            kind:local.ok ? 'ok' : 'warn',
+            msg:'AI grading unavailable; using overlap check.\n' + local.msg
+          };
+          setApiStatus('AI grading unavailable. Using local checker.', 'warn');
+        }finally{
+          btn.disabled = false;
+        }
+        result.className = 'result ' + (checked.kind || (checked.ok ? 'ok' : 'bad'));
+        result.innerHTML = buildResultHTML(checked.msg.replace(/\nModel answer:[\s\S]*$/, ''), q.a[0]);
       });
 
       response.appendChild(field);
@@ -435,6 +696,25 @@
       wrap.appendChild(response);
       return wrap;
     }
+
+    (function initGradeApiUrl(){
+      const input = document.getElementById('grade-api-url');
+      const testButton = document.getElementById('btn-test-api');
+      if(!input) return;
+      try{
+        const saved = localStorage.getItem(GRADE_API_STORAGE_KEY);
+        if(saved) input.value = saved;
+      }catch(_){}
+      if(input.addEventListener){
+        input.addEventListener('change', () => {
+          saveGradeApiUrl();
+          setApiStatus(getGradeApiUrl() ? 'AI grading enabled.' : '', getGradeApiUrl() ? 'ok' : '');
+        });
+      }
+      if(testButton && testButton.addEventListener){
+        testButton.addEventListener('click', testApi);
+      }
+    })();
 
     questions.forEach(q => {
       const group = document.getElementById(q.g);
