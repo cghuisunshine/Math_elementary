@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algebra Review Practice</title>
+  <style>
+    :root{
+      --bg:#f4f7f8;
+      --card:#ffffff;
+      --ink:#102a43;
+      --muted:#486581;
+      --accent:#1f7a8c;
+      --line:#d9e2ec;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+    }
+    .paper-header{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+    .paper-header h1{
+      margin:0 0 10px;
+      color:var(--accent);
+      font-size:2rem;
+    }
+    .paper-header p{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+    }
+    .student-line{
+      display:grid;
+      grid-template-columns:1fr 220px;
+      gap:18px;
+      margin-top:16px;
+    }
+    .line-box{
+      border-bottom:2px solid #b8c7d1;
+      height:32px;
+      display:flex;
+      align-items:flex-end;
+      color:var(--muted);
+      font-size:.95rem;
+      padding-bottom:4px;
+    }
+    .section{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+    .section h2{
+      margin:0 0 8px;
+      color:var(--accent);
+      font-size:1.4rem;
+    }
+    .section p.lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-style:italic;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:18px;
+    }
+    .question{
+      border-bottom:1px solid #e2e8f0;
+      padding:0 0 18px;
+      page-break-inside:avoid;
+    }
+    .question:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+    .qhead{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:12px;
+    }
+    .num{
+      min-width:40px;
+      height:40px;
+      border-radius:50%;
+      background:#fff;
+      color:var(--accent);
+      border:2px solid var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+    }
+    .prompt{
+      font-size:1.08rem;
+      font-weight:600;
+      padding-top:4px;
+    }
+    .workspace{
+      margin-left:52px;
+      min-height:150px;
+      border:1px solid #d9e2ec;
+      border-radius:4px;
+      background:repeating-linear-gradient(
+        to bottom,
+        #ffffff 0,
+        #ffffff 31px,
+        #e9eef2 32px
+      );
+    }
+    .workspace.short{min-height:110px;}
+    .workspace.tall{min-height:220px;}
+    .note{
+      color:var(--muted);
+      font-size:.92rem;
+      margin-top:8px;
+    }
+    @media (max-width: 800px){
+      .paper-header h1{font-size:1.7rem}
+      .student-line{grid-template-columns:1fr}
+      .workspace{margin-left:0}
+    }
+    @media print{
+      body{background:#fff}
+      .wrap{max-width:none; padding:0}
+      .paper-header,.section{border:none; box-shadow:none; padding:0; border-radius:0}
+      .paper-header{margin-bottom:14px}
+      .section{margin-bottom:16px}
+      .question{page-break-inside:avoid}
+      .workspace{border:1px solid #bbb}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="section">
+      <h2>Review: Evaluate Expressions When Variables Are Given</h2>
+      <p class="lead">Substitute the given value into the expression, then simplify.</p>
+      <div class="grid" id="reviewGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Learned: Terms, Coefficients, and Like Terms</h2>
+      <p class="lead">Identify the parts of each expression.</p>
+      <div class="grid" id="vocabGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Learned: Combining Like Terms</h2>
+      <p class="lead">Combine only the terms that have the same variable part.</p>
+      <div class="grid" id="combineGrid"></div>
+      <div class="note">Use the lined space to show your steps clearly.</div>
+    </div>
+
+    <div class="section">
+      <h2>Extra Hard: Order of Operations and Laws</h2>
+      <p class="lead">These questions use operation order, distributive law, and expression rules.</p>
+      <div class="grid" id="advancedGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      review: [
+        {id:1, prompt:'Evaluate 3x² − 2x + 5 when x = 4.'},
+        {id:2, prompt:'Evaluate 2a² + 3b when a = 5 and b = 4.'},
+        {id:3, prompt:'Evaluate y³ − 2y² + y when y = 3.'},
+        {id:4, prompt:'Evaluate 4m + 3n − 2p when m = 6, n = 5, and p = 4.'},
+        {id:5, prompt:'Evaluate (p + q)² − r when p = 2, q = 5, and r = 6.'},
+        {id:6, prompt:'Evaluate 2x³ − y² + 4 when x = 3 and y = 5.'},
+        {id:7, prompt:'Evaluate 5x² + 2x − 7 when x = 6.'},
+        {id:8, prompt:'Evaluate 3a² − 4b + 9 when a = 4 and b = 5.'},
+        {id:9, prompt:'Evaluate 2m² + n² when m = 3 and n = 4.'},
+        {id:10, prompt:'Evaluate 6p − 2q + q² when p = 5 and q = 3.'},
+        {id:11, prompt:'Evaluate (x − 1)² + 2 when x = 8.'},
+        {id:12, prompt:'Evaluate 4r² − 3r + 1 when r = 7.'},
+        {id:13, prompt:'Evaluate 2y³ + 3y when y = 2.'},
+        {id:14, prompt:'Evaluate a² + b² − ab when a = 6 and b = 2.'},
+        {id:15, prompt:'Evaluate 7m + 2n − 5 when m = 8 and n = 3.'},
+        {id:16, prompt:'Evaluate 9x − x² when x = 4.'},
+        {id:17, prompt:'Evaluate 3a² + 2ab − b² when a = 2 and b = 5.'},
+        {id:18, prompt:'Evaluate (m + n)(m − n) when m = 9 and n = 4.'},
+        {id:19, prompt:'Evaluate 5p² − 2p + 1 when p = 3.'},
+        {id:20, prompt:'Evaluate 2x² + 3x − 4 when x = 7.'},
+        {id:21, prompt:'Evaluate 4a − 3b + 2c when a = 9, b = 4, and c = 5.'},
+        {id:22, prompt:'Evaluate x² + y² + 2xy when x = 3 and y = 5.'},
+        {id:23, prompt:'Evaluate 10m − 2m² when m = 4.'},
+        {id:24, prompt:'Evaluate 3r² + s when r = 5 and s = 7.'},
+        {id:25, prompt:'Evaluate 8k − 3 when k = 12.'}
+      ],
+      vocab: [
+        {id:26, prompt:'List the terms in 15x² − 6x + 4.'},
+        {id:27, prompt:'List the terms in 9a + 3b − 2c + 7.'},
+        {id:28, prompt:'What is the coefficient of −12m³?'},
+        {id:29, prompt:'What is the coefficient of 14xy?'},
+        {id:30, prompt:'What is the coefficient of −7p²q?'},
+        {id:31, prompt:'Identify the like terms: 4x², 9x, 3x², −5, 8x, 2.'},
+        {id:32, prompt:'Are 6ab and −2ab like terms? Answer yes or no.'},
+        {id:33, prompt:'Are 3x²y and 5xy² like terms? Answer yes or no.'},
+        {id:34, prompt:'List the terms in 8m²n − 3mn + 5n − 1.'},
+        {id:35, prompt:'What is the coefficient of y in 4x + 9y − 2?'},
+        {id:36, prompt:'What is the coefficient of x² in 11x² − 4x + 7?'},
+        {id:37, prompt:'Identify the like terms: 7p, 2q, −3p, q, 6, −8.'},
+        {id:38, prompt:'List the terms in 5r³ − 2r² + r − 9.'},
+        {id:39, prompt:'What is the coefficient of −6a²b?'},
+        {id:40, prompt:'Are 12m²n and −5m²n like terms? Answer yes or no.'},
+        {id:41, prompt:'Are 4xy and 4x like terms? Answer yes or no.'},
+        {id:42, prompt:'Which term is unlike the others: 6x, −2x, 5, 9x, y?'},
+        {id:43, prompt:'List the terms in 3x² + 4xy − 7y + 10.'},
+        {id:44, prompt:'What is the coefficient of b² in 2a + 13b² − b?'},
+        {id:45, prompt:'Identify the like terms: 5x, x², −3x, 2x², 4.'},
+        {id:46, prompt:'Are −7 and 12 like terms? Answer yes or no.'},
+        {id:47, prompt:'What is the coefficient of y in 8x − y + 6?'},
+        {id:48, prompt:'List the terms in 2p²q + 3pq − 4q + 8.'},
+        {id:49, prompt:'Identify the like terms: 6mn, −2mn, 7n, 4, −5n, 9.'},
+        {id:50, prompt:'What is the coefficient of c in 3c − 2d + 5?'}
+      ],
+      combine: [
+        {id:51, prompt:'Simplify 7x + 5x.'},
+        {id:52, prompt:'Simplify 9y − 4y + 6.'},
+        {id:53, prompt:'Simplify 6a + 2 + 4a − 7.'},
+        {id:54, prompt:'Simplify 3m + 4n − 2m + 7n − 6.'},
+        {id:55, prompt:'Simplify 8x² + 5x − 3 + 2x² − 9x + 6.'},
+        {id:56, prompt:'Simplify 4p + 6 − 3p + 2p − 11.'},
+        {id:57, prompt:'Simplify 7x² + 3x − 4x² + 8x − 5.'},
+        {id:58, prompt:'Simplify 9y − 4 + 2y + 7 − 5y.'},
+        {id:59, prompt:'Simplify 6a² + 2a − 9 + 5a² − 7a + 4.'},
+        {id:60, prompt:'Simplify 5m + 3 − 2m + 8.'},
+        {id:61, prompt:'Simplify 4x + 7y − 2x + 3y.'},
+        {id:62, prompt:'Simplify 9p² − 4p + 6 − 3p² + p − 2.'},
+        {id:63, prompt:'Simplify 2r + 5 − 7 + r − 3.'},
+        {id:64, prompt:'Simplify 10x − 3x + 2x − 8.'},
+        {id:65, prompt:'Simplify 3a² + 4a + 5 + 2a² − 9a − 1.'},
+        {id:66, prompt:'Simplify 7b − 2 + 6 − 3b.'},
+        {id:67, prompt:'Simplify 4m² + 3m − 8 + m² − 5m + 2.'},
+        {id:68, prompt:'Simplify 6y + 4 − 2y + 9 − y.'},
+        {id:69, prompt:'Simplify 12c − 5 + 3c + 8 − 4c.'},
+        {id:70, prompt:'Simplify 7x² − 2x + 1 + 5x² + 6x − 9.'},
+        {id:71, prompt:'Simplify 8p + 7q − 3p + 2q.'},
+        {id:72, prompt:'Simplify 11m − 4 + 2 − 5m.'},
+        {id:73, prompt:'Simplify 2a² + 3a + 4 + a² − 8a − 9.'},
+        {id:74, prompt:'Simplify 9r − 2s + 5r + 6s.'},
+        {id:75, prompt:'Simplify 6x + 3 − 2x + 5 + x.'},
+        {id:76, prompt:'Simplify 4k² − 7k + 2 + 3k² + k − 6.'},
+        {id:77, prompt:'Simplify 5n + 9 − 3n + 4 − n.'},
+        {id:78, prompt:'Simplify 2y² + 7y − 5 + 8y² − 3y + 1.'},
+        {id:79, prompt:'Simplify 15c − 9 + 4 − 6c.'},
+        {id:80, prompt:'Simplify 3p² + 2p − 7 + 9p² − 5p + 10.'}
+      ],
+      advanced: [
+        {id:81, prompt:'Evaluate 3 + 4 × (5 − 2).'},
+        {id:82, prompt:'Evaluate (18 ÷ 3)² − 5.'},
+        {id:83, prompt:'Evaluate 2[6 + 3(4 − 1)].'},
+        {id:84, prompt:'Evaluate 7 + 2³ × 3 − 4.'},
+        {id:85, prompt:'Evaluate 5(2 + 4)² ÷ 3.'},
+        {id:86, prompt:'Simplify 3(2x − 5) + 4x.'},
+        {id:87, prompt:'Simplify 5(a + 3) − 2(a − 4).'},
+        {id:88, prompt:'Simplify 4(2m − 1) − 3(m + 5).'},
+        {id:89, prompt:'Simplify 6(x + 2) − 2(3x − 1).'},
+        {id:90, prompt:'Simplify 8(2y − 3) + 5(y + 4).'},
+        {id:91, prompt:'Evaluate 24 ÷ (6 − 2) + 3².'},
+        {id:92, prompt:'Evaluate 2⁴ + 18 ÷ 3 × 2 − 7.'},
+        {id:93, prompt:'Evaluate (9 − 3)² ÷ 2 + 1.'},
+        {id:94, prompt:'Simplify 7x + 4 + 3x − 9 + 2.'},
+        {id:95, prompt:'Simplify 2(3a − 4) + 3(2a + 1).'},
+        {id:96, prompt:'Evaluate 3{2 + [4(3 − 1)]}.'},
+        {id:97, prompt:'Simplify 9 − 2(3 − x).'},
+        {id:98, prompt:'Simplify 4(x − 2) + 3(2 − x).'},
+        {id:99, prompt:'Evaluate (2 + 3)³ − 4² ÷ 2.'},
+        {id:100, prompt:'Simplify 7[2p − (p − 3)].'}
+      ]
+    };
+
+    function createQuestion(item, parentId){
+      const parent = document.getElementById(parentId);
+      const el = document.createElement('div');
+      el.className = 'question';
+      const sizeClass = item.id >= 81 ? 'tall' : (item.id >= 26 ? 'short' : '');
+      el.innerHTML = `
+        <div class="qhead">
+          <div class="num">${item.id}</div>
+          <div class="prompt">${item.prompt}</div>
+        </div>
+        <div class="workspace ${sizeClass}"></div>
+      `;
+      parent.appendChild(el);
+    }
+
+    data.review.forEach(q => createQuestion(q, 'reviewGrid'));
+    data.vocab.forEach(q => createQuestion(q, 'vocabGrid'));
+    data.combine.forEach(q => createQuestion(q, 'combineGrid'));
+    data.advanced.forEach(q => createQuestion(q, 'advancedGrid'));
+  </script>
+</body>
+</html>
